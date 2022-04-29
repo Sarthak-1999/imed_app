@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "24225409957",
+    "project_id": "imed-3308a",
+    "storage_bucket": "imed-3308a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24225409957:android:d8cef13c66d2322739564c",
+        "android_client_info": {
+          "package_name": "com.example.imed_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24225409957-1aejqhhp7d8bb804ojoumsnqcv8umdjs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFrlHFovYN_pYbGTiymz1ctAmF3FThKr0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24225409957-1aejqhhp7d8bb804ojoumsnqcv8umdjs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
