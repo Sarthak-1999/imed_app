@@ -1,12 +1,15 @@
 import 'dart:io' show File;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:imed_app/constants.dart';
 import 'package:imed_app/screens/home_screen.dart';
 import 'package:imed_app/screens/welcome_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+import '../components/UserProfileImageFirebaseApi.dart';
 
 class UserDetailsScreen extends StatefulWidget {
   static const String id = "userDetails_screen";
@@ -24,7 +27,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   String? aadharNo;
   String? birthDateInString;
   DateTime? birthDate;
-
+  final _firestore = FirebaseFirestore.instance;
   String? userDisplayImage;
   String? dropdownValuePro;
   String? dropdownValueSem;
@@ -32,7 +35,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   final picker = ImagePicker();
   final _auth = FirebaseAuth.instance;
   TextEditingController textEditingController = TextEditingController();
-  // UploadTask task;
+  late UploadTask task;
   File? file;
   @override
   Widget build(BuildContext context) {
@@ -109,7 +112,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   child: DropdownButton<String>(
                     hint: const Text(
                       'Programme',
-                      textAlign: TextAlign.center,
+                      //textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black),
                     ),
                     focusColor: Colors.blueAccent,
@@ -129,7 +132,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         value: value,
                         child: Text(
                           value,
-                          textAlign: TextAlign.center,
+                          // textAlign: TextAlign.center,
                         ),
                       );
                     }).toList(),
@@ -152,7 +155,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   child: DropdownButton<String>(
                     hint: const Text(
                       'Semester',
-                      textAlign: TextAlign.center,
+                      //textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black),
                     ),
                     focusColor: Colors.blueAccent,
@@ -172,7 +175,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         value: value,
                         child: Text(
                           value,
-                          textAlign: TextAlign.center,
+                          // textAlign: TextAlign.center,
                         ),
                       );
                     }).toList(),
@@ -274,6 +277,27 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 onPressed: () async {
                   final User? user1 = _auth.currentUser;
                   user1?.updateDisplayName(name);
+                  final fileName = _image;
+                  final destination = 'userdisplayimage/$fileName';
+                  setState(() {
+                    showSpinner = true;
+                  });
+                  task = UserProfileImageFirebaseApi.uploadFile(
+                      destination, _image!)!;
+                  setState(() {});
+
+                  if (task == null) return null;
+
+                  final snapshot = await task.whenComplete(() {});
+                  final urlDownload = await snapshot.ref.getDownloadURL();
+                  userDisplayImage = urlDownload;
+                  await _firestore.collection('userdata').add({
+                    'userDisplayImageUrl': userDisplayImage,
+                    //'created': FieldValue.serverTimestamp(),
+                  });
+
+                  FirebaseAuth.instance.currentUser
+                      ?.updatePhotoURL(userDisplayImage);
                   DocumentReference ref = FirebaseFirestore.instance
                       .collection("users")
                       .doc(user1!.uid);
@@ -285,7 +309,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                     'phone number': phoneNo,
                     'aadhar number': aadharNo,
                     'dob': birthDate,
-                    //'urlAvatar': _auth.currentUser?.photoURL,
+                    'urlAvatar': _auth.currentUser?.photoURL,
                     'lastMessageTime': FieldValue.serverTimestamp(),
                   });
                   Navigator.pushNamed(context, WelcomeScreen.id);

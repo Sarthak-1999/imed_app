@@ -6,10 +6,14 @@ import 'package:imed_app/screens/ams_screen2.dart';
 import 'package:imed_app/screens/classroom_screen1.dart';
 import 'package:imed_app/screens/classroom_screen2.dart';
 import 'package:imed_app/screens/create_post.dart';
+import 'package:imed_app/screens/explore_screen.dart';
 import 'package:imed_app/screens/forgotPass_screen.dart';
 import 'package:imed_app/screens/home_screen.dart';
 import 'package:imed_app/screens/login_screen.dart';
+import 'package:imed_app/screens/profile_user.dart';
+import 'package:imed_app/screens/programming_screen.dart';
 import 'package:imed_app/screens/registration_screen.dart';
+import 'package:imed_app/screens/studyWithMe_screen.dart';
 import 'package:imed_app/screens/userDetails_screen.dart';
 import 'package:imed_app/screens/view_profile.dart';
 import 'package:imed_app/screens/welcome_screen.dart';
@@ -52,10 +56,14 @@ class Imed extends StatelessWidget {
                 'userDetails_screen': (context) => const UserDetailsScreen(),
                 'home_screen': (context) => const HomeScreen(),
                 'create_post': (context) => CreatePost(),
+                'profile_page': (context) => ProfilePage(),
                 'ams1_screen': (context) => const AmsScreen1(),
                 'ams2_screen': (context) => const AmsScreen2(),
                 'classroom_screen1': (context) => const ClassroomScreen1(),
                 'classroom_screen2': (context) => const ClassroomScreen2(),
+                'explore_screen': (context) => ExploreScreen(),
+                'youtubeLinksPlayer_screen': (context) => YoutubeLinksPlayer(),
+                'studyWithMe_screen': (context) => StudyWithMe(),
                 //'view_profile': (context) => const ViewProfile(),
               },
             ),

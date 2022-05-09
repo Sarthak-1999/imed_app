@@ -11,7 +11,7 @@ import 'package:imed_app/components/FirebaseApi.dart';
 
 import '../components/FirebaseApi.dart';
 
-late User loggedInUser;
+User? loggedInUser = FirebaseAuth.instance.currentUser;
 
 class CreatePost extends StatefulWidget {
   static const String id = 'create_post';
@@ -56,7 +56,6 @@ class _CreatePostState extends State<CreatePost> {
 
   @override
   Widget build(BuildContext context) {
-    //final fileName = file != null ? basename(file.path) : 'No File Selected';
     senderProfileImageUrl = _auth.currentUser!.photoURL.toString();
     senderEmail = _auth.currentUser!.email!;
     return Scaffold(
@@ -72,11 +71,11 @@ class _CreatePostState extends State<CreatePost> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
-            Text('Select your post type:'),
-            SizedBox(
+            const Text('Select your post type:'),
+            const SizedBox(
               height: 20.0,
             ),
             Row(
@@ -153,6 +152,7 @@ class _CreatePostState extends State<CreatePost> {
             SizedBox(
               height: 10.0,
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -182,13 +182,12 @@ class _CreatePostState extends State<CreatePost> {
             SizedBox(
               height: 30.0,
             ),
-            Text(
-              "Example file",
-              // fileName,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
+            // Text(
+            //  basename(file.path),
+            // style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            //  ),
             SizedBox(height: 20),
-            task != null ? buildUploadStatus(task) : Container(),
+            // task != null ? buildUploadStatus(task) : Container(),
             SizedBox(
               height: 50,
             ),
@@ -226,10 +225,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref.set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': postImageUrl,
                         'created': FieldValue.serverTimestamp(),
@@ -238,10 +237,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref1.collection('feeds').doc(ref.id).set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': postImageUrl,
                         'created': FieldValue.serverTimestamp(),
@@ -288,10 +287,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref.set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': postImageUrl,
                         'created': FieldValue.serverTimestamp(),
@@ -299,10 +298,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref1.collection('questions').doc(ref.id).set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': postImageUrl,
                         'created': FieldValue.serverTimestamp(),
@@ -327,10 +326,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref.set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': null,
                         'created': FieldValue.serverTimestamp(),
@@ -338,10 +337,10 @@ class _CreatePostState extends State<CreatePost> {
                       await ref1.collection('questions').doc(ref.id).set({
                         'postId': ref.id,
                         'postTitle': postTitle,
-                        'sender': loggedInUser.displayName,
-                        'senderEmail': loggedInUser.email,
+                        'sender': loggedInUser?.displayName,
+                        'senderEmail': loggedInUser?.email,
                         'senderProfileImageUrl': senderProfileImageUrl,
-                        'senderId': loggedInUser.uid,
+                        'senderId': loggedInUser?.uid,
                         'postType': postTypeText,
                         'postImageUrl': null,
                         'created': FieldValue.serverTimestamp(),
@@ -405,7 +404,7 @@ class _CreatePostState extends State<CreatePost> {
 
             return Text(
               '$percentage %',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             );
           } else {
             return Container();

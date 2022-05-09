@@ -2,62 +2,48 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:flutter/gestures.dart';
-
 import 'package:flutter/material.dart';
 
+import 'package:imed_app/userprofile/appbar_widget.dart';
+import 'package:imed_app/userprofile/button_widget.dart';
+import 'package:imed_app/userprofile/numbers_widget.dart';
+import 'package:imed_app/userprofile/profile_widget.dart';
+
 import '../constants.dart';
-import '../userprofile/appbar_widget.dart';
-import '../userprofile/profile_widget.dart';
 
-class ViewProfile extends StatefulWidget {
-  const ViewProfile({
-    required this.postSenderId,
-    required this.postSenderImageUrl,
-    required this.postSender,
-    required this.postSenderEmail,
-  });
-  final String postSenderId;
-  final String postSenderImageUrl;
-  final String postSender;
-  final String postSenderEmail;
-  static const String id = 'view_profile';
-
+class ProfilePage extends StatefulWidget {
+  static const String id = 'profile_page';
   @override
-  _ViewProfileState createState() => _ViewProfileState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ViewProfileState extends State<ViewProfile> {
-  bool selectedTag1 = true;
-  bool selectedTag2 = false;
-  bool isFollowing = false;
+class _ProfilePageState extends State<ProfilePage> {
   final user = FirebaseAuth.instance.currentUser;
   final controller = ScrollController();
-  final username = FirebaseAuth.instance.currentUser?.displayName;
+  bool selectedTag1 = true;
+  bool selectedTag2 = false;
+  //final username = user.displayName;
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final username = user?.displayName;
+    // final user = FirebaseAuth.instance.currentUser;
+    // final username = user.displayName;
     //final user = UserPreferences.myUser;
 
     return Scaffold(
       appBar: buildAppBar(context),
       body: ListView(
         shrinkWrap: true,
-        scrollDirection: Axis.vertical,
         //physics: BouncingScrollPhysics(),
         children: [
           ProfileWidget(
-            imagePath: widget.postSenderImageUrl,
+            imagePath: user!.photoURL!,
             onClicked: () async {},
           ),
           const SizedBox(height: 24),
-          buildName(),
+          buildName(user),
           const SizedBox(height: 24),
           Center(child: buildUpgradeButton()),
-          //const SizedBox(height: 24),
-          //NumbersWidget(),
-          const SizedBox(height: 48),
+          const SizedBox(height: 24),
           buildAbout(),
           const SizedBox(height: 24),
           Row(
@@ -67,8 +53,8 @@ class _ViewProfileState extends State<ViewProfile> {
                 //flex: selectedTag1 ? 1 : 0,
                 child: MaterialButton(
                   height: selectedTag1 ? 48 : 42,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero),
+                  shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   elevation: selectedTag1 ? 10.0 : 0,
                   color: selectedTag1 ? Colors.white : Colors.grey[300],
                   onPressed: () {
@@ -93,8 +79,8 @@ class _ViewProfileState extends State<ViewProfile> {
                 //flex: selectedTag2 ? 1 : 0,
                 child: MaterialButton(
                   height: selectedTag2 ? 48 : 42,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero),
+                  shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   elevation: selectedTag2 ? 10.0 : 0,
                   color: selectedTag2 ? Colors.white : Colors.grey[300],
                   onPressed: () {
@@ -114,142 +100,46 @@ class _ViewProfileState extends State<ViewProfile> {
               ),
             ],
           ),
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
-          // buildPost(),
+          //buildPost(),
           selectedTag1 ? buildPost() : buildQuestionsPost(),
         ],
       ),
     );
   }
 
-  Widget buildName() => Column(
+  Widget buildName(user) => Column(
         children: [
           Text(
-            widget.postSender,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            FirebaseAuth.instance.currentUser!.displayName!,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           ),
           const SizedBox(height: 4),
           Text(
-            widget.postSenderEmail,
+            FirebaseAuth.instance.currentUser!.email!,
             // style: TextStyle(color: Colors.grey),
           )
         ],
       );
 
-  Widget buildUpgradeButton() =>
-      // StreamBuilder<QuerySnapshot>(
-      //     stream: FirebaseFirestore.instance
-      //         .collection('allUserPost')
-      //         .doc(widget.postSenderId)
-      //         .collection('followers')
-      //         //.orderBy('created', descending: false)
-      //         .snapshots(),
-      //     builder: (context, snapshot) {
-      //       if (!snapshot.hasData) {
-      //         return Container();
-      //       }
-      //       final followersData = snapshot.data.docs;
-      //       final count = followersData.length;
-      //       // List<int> likes = [];
-      //       // for (var like in likesData) {
-      //       //   final likesCount = like.data()['postTitle'];
-      //       //   final postSender = post.data()['sender'];
-      //       //   final postSenderId = post.data()['senderId'];
-      //       //   final postSenderImage = post.data()['senderProfileImageUrl'];
-      //       //   final postType = post.data()['postType'];
-      //       //   final postImageUrl = post.data()['postImageUrl'];
-      //       //   final postLikeCounter = post.data()['postLikeCounter'];
-      //       // }
-
-      // return
-
-      Column(
+  Widget buildUpgradeButton() => Column(
         children: [
           MaterialButton(
-            elevation: 8,
-            height: 40,
-            shape: const RoundedRectangleBorder(
-                borderRadius:
-                    const BorderRadius.all(const Radius.circular(20))),
-            color: Colors.blueAccent,
-            child: widget.postSenderId != FirebaseAuth.instance.currentUser?.uid
-                ? Text(
-                    !isFollowing ? 'Follow ' : 'Unfollow ',
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text(
-                    'Edit you profile',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-            onPressed: () {
-              setState(() {
-                isFollowing = !isFollowing;
-              });
-              if (widget.postSenderId !=
-                  FirebaseAuth.instance.currentUser?.uid) {
-                if (isFollowing == true) {
-                  // DocumentReference ref = FirebaseFirestore.instance
-                  //     .collection('allUserPost')
-                  //     .doc(widget.postSenderId);
-                  DocumentReference ref1 = FirebaseFirestore.instance
-                      .collection('allUserPost')
-                      .doc(widget.postSenderId)
-                      .collection('followers')
-                      .doc(FirebaseAuth.instance.currentUser?.uid);
-                  // ref.update({
-                  //   'followers': count,
-                  //   // 'userId': loggedInUser.uid,
-                  //   'created': FieldValue.serverTimestamp(),
-                  // });
-                  ref1.set({
-                    'userId': FirebaseAuth.instance.currentUser?.uid,
-                    'userName': FirebaseAuth.instance.currentUser?.displayName,
-                    'userImageUrl': FirebaseAuth.instance.currentUser?.photoURL,
-                  });
-                  DocumentReference ref2 = FirebaseFirestore.instance
-                      .collection('allUserPost')
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .collection('following')
-                      .doc(widget.postSenderId);
-                  ref2.set({});
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('You are now following ' + widget.postSender),
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-                } else if (isFollowing == false) {
-                  DocumentReference ref1 = FirebaseFirestore.instance
-                      .collection('allUserPost')
-                      .doc(widget.postSenderId)
-                      .collection('followers')
-                      .doc(FirebaseAuth.instance.currentUser?.uid);
-                  ref1.delete();
-
-                  DocumentReference ref2 = FirebaseFirestore.instance
-                      .collection('allUserPost')
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .collection('following')
-                      .doc(widget.postSenderId);
-                  ref2.delete();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Unfollowed ' + widget.postSender),
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-          const SizedBox(
+              elevation: 8,
+              height: 40,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              color: Colors.blueAccent,
+              child: Text(
+                'Edit you profile',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {}),
+          SizedBox(
             height: 20,
           ),
           Row(
@@ -260,14 +150,14 @@ class _ViewProfileState extends State<ViewProfile> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('allUserPost')
-                          .doc(widget.postSenderId)
+                          .doc(FirebaseAuth.instance.currentUser?.uid)
                           .collection('followers')
                           //.orderBy('created', descending: false)
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return const Center(
-                            child: const CircularProgressIndicator(
+                          return Center(
+                            child: CircularProgressIndicator(
                                 //backgroundColor: Colors.lightBlueAccent,
                                 ),
                           );
@@ -277,7 +167,7 @@ class _ViewProfileState extends State<ViewProfile> {
 
                         return Text(count.toString());
                       }),
-                  const Text('Followers')
+                  Text('Followers')
                 ],
               ),
               Column(
@@ -285,14 +175,14 @@ class _ViewProfileState extends State<ViewProfile> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('allUserPost')
-                          .doc(widget.postSenderId)
+                          .doc(FirebaseAuth.instance.currentUser?.uid)
                           .collection('following')
                           //.orderBy('created', descending: false)
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return const Center(
-                            child: const CircularProgressIndicator(
+                          return Center(
+                            child: CircularProgressIndicator(
                                 //backgroundColor: Colors.lightBlueAccent,
                                 ),
                           );
@@ -302,7 +192,7 @@ class _ViewProfileState extends State<ViewProfile> {
 
                         return Text(count.toString());
                       }),
-                  const Text('Following')
+                  Text('Following')
                 ],
               ),
             ],
@@ -311,38 +201,36 @@ class _ViewProfileState extends State<ViewProfile> {
       );
 
   Widget buildAbout() => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 48),
+        padding: EdgeInsets.symmetric(horizontal: 48),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'About',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Student at IMED Pune.',
-              style: const TextStyle(fontSize: 16, height: 1.4),
+              style: TextStyle(fontSize: 16, height: 1.4),
             ),
           ],
         ),
       );
 
-  // UNCOMMENT
-
   Widget buildPost() => Container(
-        margin: const EdgeInsets.all(1.0),
+        margin: EdgeInsets.all(1.0),
         child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('allUserPost')
-                .doc(widget.postSenderId)
+                .doc(FirebaseAuth.instance.currentUser?.uid)
                 .collection('feeds')
                 .orderBy('created', descending: false)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(
-                  child: const CircularProgressIndicator(
+                return Center(
+                  child: CircularProgressIndicator(
                     backgroundColor: Colors.lightBlueAccent,
                   ),
                 );
@@ -380,7 +268,6 @@ class _ViewProfileState extends State<ViewProfile> {
                   postSenderImageUrl: postSenderImage,
                   postSender: postSender,
                   postSenderEmail: postSenderEmail,
-                  //index: ,
                 );
 
                 userDescription.add(postDetails);
@@ -392,7 +279,7 @@ class _ViewProfileState extends State<ViewProfile> {
                           shrinkWrap: true,
                           controller: controller,
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,
                             mainAxisSpacing: 1,
                             crossAxisSpacing: 1,
@@ -414,14 +301,14 @@ class _ViewProfileState extends State<ViewProfile> {
         builder: (context) => StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('allUserPost')
-                .doc(widget.postSenderId)
+                .doc(FirebaseAuth.instance.currentUser?.uid)
                 .collection('feeds')
                 .orderBy('created', descending: false)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(
-                  child: const CircularProgressIndicator(
+                return Center(
+                  child: CircularProgressIndicator(
                     backgroundColor: Colors.lightBlueAccent,
                   ),
                 );
@@ -429,9 +316,6 @@ class _ViewProfileState extends State<ViewProfile> {
               final allPostData = snapshot.data?.docs.reversed;
 
               List<UserDescription> userDescription = [];
-
-              //UNCOMMENT
-
               for (var post in allPostData!) {
                 final postTitle = post['postTitle'];
                 final postSender = post['sender'];
@@ -459,12 +343,11 @@ class _ViewProfileState extends State<ViewProfile> {
 
               return Card(
                 elevation: 10.0,
-                margin: const EdgeInsets.symmetric(
-                    vertical: 29.0, horizontal: 10.0),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: const Radius.elliptical(20, 20),
-                    topRight: const Radius.elliptical(20, 20),
+                margin: EdgeInsets.symmetric(vertical: 29.0, horizontal: 10.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.elliptical(20, 20),
+                    topRight: Radius.elliptical(20, 20),
                     bottomLeft: Radius.circular(20.0),
                     bottomRight: Radius.circular(20.0),
                   ),
@@ -477,17 +360,17 @@ class _ViewProfileState extends State<ViewProfile> {
             }),
       );
   Widget buildQuestionsPost() => Container(
-        margin: const EdgeInsets.all(1.0),
+        margin: EdgeInsets.all(1.0),
         child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('allUserPost')
-                .doc(widget.postSenderId)
+                .doc(FirebaseAuth.instance.currentUser?.uid)
                 .collection('questions')
                 .orderBy('created', descending: false)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(
+                return Center(
                   child: CircularProgressIndicator(
                     backgroundColor: Colors.lightBlueAccent,
                   ),
@@ -537,13 +420,13 @@ class _ViewProfileState extends State<ViewProfile> {
 }
 
 class UserPostImage extends StatefulWidget {
-  const UserPostImage({
+  UserPostImage({
     required this.postSender,
     required this.postSenderEmail,
     required this.postSenderId,
     //   this.postText,
     required this.postImageUrl,
-    //  required this.index,
+    // required this.index,
     required this.postSenderImageUrl,
     // this.postType,
     //this.postLikeCounter,
@@ -591,7 +474,7 @@ class _UserPostImageState extends State<UserPostImage> {
 }
 
 class UserDescription extends StatefulWidget {
-  const UserDescription(
+  UserDescription(
       {required this.postSender,
       required this.postSenderId,
       required this.postText,
@@ -667,16 +550,16 @@ class _UserDescriptionState extends State<UserDescription> {
             // ),
           ),
         ),
-        const Divider(
+        Divider(
           thickness: 1,
         ),
         Container(
-          padding: const EdgeInsets.only(left: 10.0, top: 13.0, bottom: 13.0),
+          padding: EdgeInsets.only(left: 10.0, top: 13.0, bottom: 13.0),
           alignment: Alignment.centerLeft,
           child: Text(
             widget.postText,
             textAlign: TextAlign.start,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17.5,
             ),
           ),
@@ -686,16 +569,15 @@ class _UserDescriptionState extends State<UserDescription> {
         // ),
         Expanded(
           child: CachedNetworkImage(
-              imageUrl: widget.postImageUrl,
-              //// != null
-              //     ? widget.postImageUrl
-              //     : const Text('Error Retrieving image'),
+              imageUrl: //widget.postImageUrl != null ?
+                  widget.postImageUrl,
+              //: Text('Error Retrieving image'),
               fit: BoxFit.fitWidth,
               width: double.maxFinite,
               height: 540.0 // widget.postImageUrl != null ? 550.0 : 100.0,
               ),
         ),
-        const Divider(
+        Divider(
           thickness: 2,
         ),
         Row(
@@ -712,7 +594,7 @@ class _UserDescriptionState extends State<UserDescription> {
               ),
             ),
             new IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.mode_comment_outlined,
               ),
               onPressed: () {
@@ -723,14 +605,14 @@ class _UserDescriptionState extends State<UserDescription> {
                     //backgroundColor: Colors.transparent,
                     //enableDrag: true,
                     // elevation: 1,
-                    shape: const RoundedRectangleBorder(
+                    shape: RoundedRectangleBorder(
                         side: BorderSide.none,
                         borderRadius: BorderRadius.vertical(
                             top: Radius.elliptical(20, 20))));
               },
             ),
             new IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.bookmark_border_rounded,
               ),
               onPressed: () {},
@@ -876,9 +758,9 @@ class _UserDescriptionState extends State<UserDescription> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           AppBar(
-              title: const Text('Comments'),
+              title: Text('Comments'),
               centerTitle: true,
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 side: BorderSide.none,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.elliptical(20, 20),
@@ -920,11 +802,11 @@ class _UserDescriptionState extends State<UserDescription> {
                   itemCount: count,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: const CircleAvatar(child: FlutterLogo()),
+                      leading: CircleAvatar(child: FlutterLogo()),
                       title: Text(
                         comments[index],
                       ),
-                      trailing: const Icon(Icons.report),
+                      trailing: Icon(Icons.report),
                     );
                   });
             },
@@ -967,7 +849,7 @@ class _UserDescriptionState extends State<UserDescription> {
                       'created': FieldValue.serverTimestamp(),
                     });
                   },
-                  child: const Icon(
+                  child: Icon(
                     Icons.send_rounded,
                     color: Colors.lightBlueAccent,
                   ),
@@ -982,7 +864,7 @@ class _UserDescriptionState extends State<UserDescription> {
 }
 
 class QuestionsButton extends StatefulWidget {
-  const QuestionsButton(
+  QuestionsButton(
       {required this.postSender,
       required this.postSenderId,
       required this.postText,
@@ -1015,7 +897,7 @@ class _QuestionsButtonState extends State<QuestionsButton> {
     return Card(
       elevation: 5.0,
       //margin: EdgeInsets.symmetric(vertical: 5.0),
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.elliptical(20, 20),
           topRight: Radius.elliptical(20, 20),
@@ -1074,16 +956,16 @@ class _QuestionsButtonState extends State<QuestionsButton> {
               // ),
             ),
           ),
-          const Divider(
+          Divider(
             thickness: 1,
           ),
           Container(
-            padding: const EdgeInsets.only(left: 10.0, top: 13.0, bottom: 13.0),
+            padding: EdgeInsets.only(left: 10.0, top: 13.0, bottom: 13.0),
             alignment: Alignment.centerLeft,
             child: Text(
               widget.postText,
               textAlign: TextAlign.start,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 17.5,
               ),
             ),
@@ -1093,16 +975,15 @@ class _QuestionsButtonState extends State<QuestionsButton> {
           // ),
           widget.postImageUrl != null
               ? CachedNetworkImage(
-                  imageUrl: widget.postImageUrl,
-                  //  != null
-                  //     ? widget.postImageUrl
-                  //     : const Text('Error Retrieving image'),
+                  imageUrl: //widget.postImageUrl != null ?
+                      widget.postImageUrl,
+                  // : Text('Error Retrieving image'),
                   fit: BoxFit.fitWidth,
                   width: double.maxFinite,
                   height: 450.0 // widget.postImageUrl != null ? 550.0 : 100.0,
                   )
-              : const SizedBox(),
-          const Divider(
+              : SizedBox(),
+          Divider(
             thickness: 2,
           ),
           Row(
@@ -1119,7 +1000,7 @@ class _QuestionsButtonState extends State<QuestionsButton> {
                 ),
               ),
               new IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.mode_comment_outlined,
                 ),
                 onPressed: () {
@@ -1130,14 +1011,14 @@ class _QuestionsButtonState extends State<QuestionsButton> {
                       //backgroundColor: Colors.transparent,
                       //enableDrag: true,
                       // elevation: 1,
-                      shape: const RoundedRectangleBorder(
+                      shape: RoundedRectangleBorder(
                           side: BorderSide.none,
                           borderRadius: BorderRadius.vertical(
                               top: Radius.elliptical(20, 20))));
                 },
               ),
               new IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.bookmark_border_rounded,
                 ),
                 onPressed: () {},
@@ -1163,16 +1044,16 @@ class _QuestionsButtonState extends State<QuestionsButton> {
           }
           final likesData = snapshot.data?.docs;
           final count = likesData?.length;
-          List<int> likes = [];
-          for (var like in likesData!) {
-            final likesCount = like['postTitle'];
-            final postSender = like['sender'];
-            final postSenderId = like['senderId'];
-            final postSenderImage = like['senderProfileImageUrl'];
-            final postType = like['postType'];
-            final postImageUrl = like['postImageUrl'];
-            final postLikeCounter = like['postLikeCounter'];
-          }
+          // List<int> likes = [];
+          // for (var like in likesData) {
+          //   final likesCount = like.data()['postTitle'];
+          //   final postSender = post.data()['sender'];
+          //   final postSenderId = post.data()['senderId'];
+          //   final postSenderImage = post.data()['senderProfileImageUrl'];
+          //   final postType = post.data()['postType'];
+          //   final postImageUrl = post.data()['postImageUrl'];
+          //   final postLikeCounter = post.data()['postLikeCounter'];
+          // }
 
           return GestureDetector(
               child: Row(
@@ -1284,11 +1165,11 @@ class _QuestionsButtonState extends State<QuestionsButton> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           AppBar(
-              title: const Text('Comments'),
+              title: Text('Comments'),
               centerTitle: true,
-              shape: const RoundedRectangleBorder(
+              shape: RoundedRectangleBorder(
                 side: BorderSide.none,
-                borderRadius: const BorderRadius.vertical(
+                borderRadius: BorderRadius.vertical(
                   top: Radius.elliptical(20, 20),
                 ),
               )),
@@ -1307,19 +1188,19 @@ class _QuestionsButtonState extends State<QuestionsButton> {
               final commentData = snapshot.data?.docs.reversed;
               final count = commentData?.length;
               List<String> comments = [];
-              // for (var comment in commentData!) {
-              //   // final likesCount = like.data()['postTitle'];
-              //   final userComment = comment.data()['comment'];
-              //   //final userCommentSenderId = comment.data()['senderId'];
-              //   // final postSenderImage = post.data()['senderProfileImageUrl'];
-              //   // final postType = post.data()['postType'];
-              //   // final postImageUrl = post.data()['postImageUrl'];
-              //   // final postLikeCounter = post.data()['postLikeCounter'];
+              for (var comment in commentData!) {
+                // final likesCount = like.data()['postTitle'];
+                final userComment = comment['comment'];
+                //final userCommentSenderId = comment.data()['senderId'];
+                // final postSenderImage = post.data()['senderProfileImageUrl'];
+                // final postType = post.data()['postType'];
+                // final postImageUrl = post.data()['postImageUrl'];
+                // final postLikeCounter = post.data()['postLikeCounter'];
 
-              //   comments.add(
-              //     userComment,
-              //   );
-              // }
+                comments.add(
+                  userComment,
+                );
+              }
               return ListView.builder(
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
@@ -1328,11 +1209,11 @@ class _QuestionsButtonState extends State<QuestionsButton> {
                   itemCount: count,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: const CircleAvatar(child: const FlutterLogo()),
+                      leading: CircleAvatar(child: FlutterLogo()),
                       title: Text(
                         comments[index],
                       ),
-                      trailing: const Icon(Icons.report),
+                      trailing: Icon(Icons.report),
                     );
                   });
             },
@@ -1375,7 +1256,7 @@ class _QuestionsButtonState extends State<QuestionsButton> {
                       'created': FieldValue.serverTimestamp(),
                     });
                   },
-                  child: const Icon(
+                  child: Icon(
                     Icons.send_rounded,
                     color: Colors.lightBlueAccent,
                   ),

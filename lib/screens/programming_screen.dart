@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class StudyWithMe extends StatefulWidget {
-  static const String id = 'studyWithMe_screen';
+class YoutubeLinksPlayer extends StatefulWidget {
+  static const String id = 'youtubeLinksPlayer_screen';
   @override
-  _StudyWithMeState createState() => _StudyWithMeState();
+  _YoutubeLinksPlayerState createState() => _YoutubeLinksPlayerState();
 }
 
-class _StudyWithMeState extends State<StudyWithMe> {
+class _YoutubeLinksPlayerState extends State<YoutubeLinksPlayer> {
   TextEditingController _addItemController = TextEditingController();
   late DocumentReference linkRef;
   List<String> videoID = [];
@@ -19,12 +19,12 @@ class _StudyWithMeState extends State<StudyWithMe> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Study With Me Videos'),
+        title: Text('Programming Videos'),
       ),
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
+            margin: EdgeInsets.symmetric(horizontal: 8),
             child: TextField(
               controller: _addItemController,
               onEditingComplete: () {
@@ -67,26 +67,22 @@ class _StudyWithMeState extends State<StudyWithMe> {
           ),
           Flexible(
               child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  margin: EdgeInsets.symmetric(horizontal: 4),
                   child: ListView.builder(
                       itemCount: videoID.length,
                       itemBuilder: (context, index) => Container(
-                            margin: const EdgeInsets.all(8),
+                            margin: EdgeInsets.all(8),
                             child: YoutubePlayer(
                               controller: YoutubePlayerController(
-                                initialVideoId:
-                                    YoutubePlayer.convertUrlToId(videoID[index])
-                                        .toString(),
-                                flags: const YoutubePlayerFlags(
-                                  autoPlay: false,
-                                  enableCaption: false,
-                                  useHybridComposition: false,
-                                ),
-                              ),
-                              liveUIColor: Colors.red,
+                                  initialVideoId: YoutubePlayer.convertUrlToId(
+                                          videoID[index])
+                                      .toString(),
+                                  flags: YoutubePlayerFlags(
+                                    autoPlay: false,
+                                  )),
                               showVideoProgressIndicator: true,
                               progressIndicatorColor: Colors.red,
-                              progressColors: const ProgressBarColors(
+                              progressColors: ProgressBarColors(
                                   playedColor: Colors.red,
                                   handleColor: Colors.red),
                             ),
@@ -98,7 +94,7 @@ class _StudyWithMeState extends State<StudyWithMe> {
 
   @override
   void initState() {
-    linkRef = FirebaseFirestore.instance.collection('links').doc('studyWithMe');
+    linkRef = FirebaseFirestore.instance.collection('links').doc('urls');
     super.initState();
     getData();
     print(videoID);
@@ -120,6 +116,24 @@ class _StudyWithMeState extends State<StudyWithMe> {
     _addItemController.clear();
   }
 
+//   getData() async {
+//    final vidData= await linkRef
+//         .get()
+//         .then((value) => value.data();
+// for ( key in value) {
+//    if (!videoID.contains(value)) {
+//                 videoID.add(value);
+//               }
+// }
+
+//             )
+//         .whenComplete(() => setState(() {
+//               videoID.shuffle();
+//               showItem = true;
+//             }));
+//   }
+// }
+
   getData() async {
     await linkRef
         .get()
@@ -129,7 +143,7 @@ class _StudyWithMeState extends State<StudyWithMe> {
                     videoID.add(value);
                   }
                 })
-            : const Text('Download not succesful'))
+            : value)
         .whenComplete(() => setState(() {
               videoID.shuffle();
               showItem = true;
