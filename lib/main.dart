@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:imed_app/components/user_state.dart';
 import 'package:imed_app/screens/ams_screen1.dart';
 import 'package:imed_app/screens/ams_screen2.dart';
+import 'package:imed_app/screens/bookmarks_screen.dart';
 import 'package:imed_app/screens/classroom_screen1.dart';
 import 'package:imed_app/screens/classroom_screen2.dart';
 import 'package:imed_app/screens/create_post.dart';
 import 'package:imed_app/screens/explore_screen.dart';
 import 'package:imed_app/screens/forgotPass_screen.dart';
+import 'package:imed_app/screens/help_screen.dart';
 import 'package:imed_app/screens/home_screen.dart';
 import 'package:imed_app/screens/login_screen.dart';
 import 'package:imed_app/screens/profile_user.dart';
@@ -57,6 +59,8 @@ class Imed extends StatelessWidget {
                 'home_screen': (context) => const HomeScreen(),
                 'create_post': (context) => CreatePost(),
                 'profile_page': (context) => ProfilePage(),
+                'bookmarks_screen': (context) => BookmarksScreen(),
+                'help_screen': (context) => HelpScreen(),
                 'ams1_screen': (context) => const AmsScreen1(),
                 'ams2_screen': (context) => const AmsScreen2(),
                 'classroom_screen1': (context) => const ClassroomScreen1(),

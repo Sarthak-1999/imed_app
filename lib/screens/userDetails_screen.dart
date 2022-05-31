@@ -40,6 +40,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       //backgroundColor: Colors.white,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
@@ -82,7 +83,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
               ),
               const SizedBox(
-                height: 48.0,
+                height: 20.0,
               ),
               TextField(
                 controller: textEditingController,

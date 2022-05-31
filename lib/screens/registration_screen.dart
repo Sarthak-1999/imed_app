@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:imed_app/components/rounded_button.dart';
 import 'package:imed_app/constants.dart';
@@ -153,11 +154,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       // });
 
                       Navigator.pushNamed(context, UserDetailsScreen.id);
+
+                      // if (FirebaseAuth.instance.currentUser!.emailVerified) {
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(
+                      //       content: Text('User already registered'),
+                      //     ),
+                      //   );
+                      // }
                       setState(() {
                         showSpinner = false;
                       });
-                    } catch (e) {
-                      print(e);
+                    } catch (signUpError) {
+                      if (signUpError is PlatformException) {
+                        if (signUpError.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+                          /// `foo@bar.com` has alread been registered.
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('User already registered'),
+                            ),
+                          );
+                        }
+                      }
                     }
                   },
                   child: const Text(

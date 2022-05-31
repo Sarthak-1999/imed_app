@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:imed_app/components/navigation_provider.dart';
 import 'package:imed_app/constants.dart';
 import 'package:imed_app/screens/ams_screen1.dart';
+import 'package:imed_app/screens/bookmarks_screen.dart';
 import 'package:imed_app/screens/classroom_screen1.dart';
 import 'package:imed_app/screens/create_post.dart';
 import 'package:imed_app/screens/explore_screen.dart';
+import 'package:imed_app/screens/help_screen.dart';
 import 'package:imed_app/screens/profile_user.dart';
 import 'package:imed_app/screens/view_profile.dart';
 import 'package:imed_app/screens/welcome_screen.dart';
@@ -369,7 +371,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.of(context).pop();
     switch (index) {
       case 0:
-        Navigator.pushNamed(context, HomeScreen.id);
+        Navigator.pushNamed(context, BookmarksScreen.id);
+
+        break;
+      case 1:
+        Navigator.pushNamed(context, HelpScreen.id);
 
         break;
       //TODO: Add other cases to access other button like settings and help buttons.
@@ -693,8 +699,8 @@ class _UserDescriptionState extends State<UserDescription> {
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: Row(
-                children: const [
-                  //bookmarks(),
+                children: [
+                  bookmarks(),
                   // Text(_counter.toString()),
                   //postLikeCounter(),
                 ],
