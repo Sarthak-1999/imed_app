@@ -35,7 +35,7 @@ class _AmsScreen1State extends State<AmsScreen1> {
                 ),
               );
             }
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i < snapshot.data!.size; i++) {
               final userdata = snapshot.data?.docs[i];
 
               // Future<DocumentSnapshot<Map<String, dynamic>>> userProgramme =
